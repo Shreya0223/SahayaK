@@ -145,24 +145,40 @@ function TopNav() {
           )}
           {currentUser ? (
             <div className="relative">
-              <button onClick={() => setRoleOpen((v) => !v)} className="flex items-center gap-2 rounded-full hover:opacity-90" aria-label="Account / view as">
+              <button
+                onClick={() => setRoleOpen((v) => !v)}
+                className="flex items-center gap-2 rounded-full border border-pine-900/10 bg-paper py-1 pl-1 pr-3 transition hover:bg-pine-50"
+                aria-label="Account menu"
+              >
                 <span className="relative">
-                  <Avatar user={currentUser} size={34} />
+                  <Avatar user={currentUser} size={30} />
                   <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-pine-600 ring-2 ring-cream" />
                 </span>
+                <span className="hidden max-w-[120px] truncate text-[13px] font-bold text-ink sm:block">{currentUser.name}</span>
+                <ChevronDown size={13} className={cx('text-pine-900/40 transition-transform', roleOpen && 'rotate-180')} />
               </button>
               {roleOpen && (
                 <>
                   <div className="fixed inset-0 z-30" onClick={() => setRoleOpen(false)} />
                   <div className="absolute right-0 top-11 z-40 w-72 animate-fade-up overflow-hidden rounded-2xl border border-pine-900/10 bg-paper shadow-pop">
                     <div className="border-b border-pine-900/10 px-4 py-3.5">
-                      <div className="text-sm font-bold text-ink">{currentUser.name}</div>
-                      <div className="mt-0.5 text-[11px] leading-snug text-pine-900/50">
-                        {currentUser.institution ?? currentUser.location}
+                      <div className="flex items-center gap-3">
+                        <Avatar user={currentUser} size={42} />
+                        <div className="min-w-0">
+                          <div className="truncate text-sm font-bold text-ink">{currentUser.name}</div>
+                          <div className="truncate text-[11px] text-pine-900/50">{currentUser.email ?? currentUser.location}</div>
+                        </div>
                       </div>
-                      <span className="chip mt-2 inline-flex bg-pine-100 text-[10px] font-bold uppercase tracking-wide text-pine-800">
-                        {ROLE_LABEL[currentUser.role]} account active
-                      </span>
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                        <span className="chip bg-pine-100 text-[10px] font-bold uppercase tracking-wide text-pine-800">
+                          {ROLE_LABEL[currentUser.role]} account active
+                        </span>
+                        {currentUser.emailVerified && (
+                          <span className="chip bg-pine-50 text-[10px] font-bold text-pine-700" title="Email verified">
+                            ✓ Email verified
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <div className="border-b border-pine-900/10 p-2">
                       <Link to="/profile" onClick={() => setRoleOpen(false)} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] font-semibold text-pine-900/80 hover:bg-pine-50">
@@ -191,7 +207,9 @@ function TopNav() {
               )}
             </div>
           ) : (
-            <Link to="/auth" className="btn-primary px-4 py-1.5 text-[13px]">Sign in</Link>
+            <Link to="/auth" className="flex items-center gap-1.5 rounded-full bg-pine-800 px-4 py-2 text-[13px] font-bold text-paper shadow-card transition hover:bg-pine-900">
+              <UserRound size={14} /> Login
+            </Link>
           )}
         </div>
       </div>

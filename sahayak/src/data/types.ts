@@ -101,6 +101,9 @@ export interface User {
   // onboarding flags
   onboarded?: boolean
   email?: string
+  photo?: string
+  emailVerified?: boolean
+  provider?: 'email' | 'google'
 }
 
 export interface AiAnalysis {

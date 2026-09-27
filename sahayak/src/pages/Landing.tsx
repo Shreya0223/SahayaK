@@ -38,7 +38,7 @@ export default function Landing() {
                 <span className="text-xl font-extrabold tracking-tight text-pine-800">SahayaK</span>
               </span>
               <span className="flex items-center gap-1 text-[11px] font-semibold text-pine-900/50">
-                📍 Pune Rural Hub (Bhor / Mulshi) <span className="opacity-50">▾</span>
+                📍 Ranchi Rural Hub (Angara / Bundu) <span className="opacity-50">▾</span>
               </span>
             </span>
           </div>

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { BadgeCheck, Copy, Download, Lock, ShieldCheck } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { BadgeCheck, Camera, Copy, Download, Lock, ShieldCheck, Trash2 } from 'lucide-react'
 import { useStore, ROLE_LABEL } from '@/data/store'
 import { deriveCredentials, credentialStats } from '@/data/credentials'
 import type { Credential } from '@/data/credentials'
@@ -15,11 +15,25 @@ const SKILL_OPTIONS = [
 export default function Profile() {
   const currentUser = useStore((s) => s.currentUser)
   const updateProfile = useStore((s) => s.updateProfile)
+  const setToast = useStore((s) => s.setToast)
   const users = useStore((s) => s.users)
   const problems = useStore((s) => s.problems)
   const projects = useStore((s) => s.projects)
 
   const me = users.find((u) => u.id === currentUser?.id)
+  const photoInputRef = useRef<HTMLInputElement | null>(null)
+
+  const onPhotoPick = (file: File | undefined) => {
+    if (!file || !me) return
+    if (!file.type.startsWith('image/')) { setToast('Please choose an image file'); return }
+    if (file.size > 1.5 * 1024 * 1024) { setToast('Image too large — pick one under 1.5 MB'); return }
+    const reader = new FileReader()
+    reader.onload = () => {
+      updateProfile({ photo: String(reader.result) })
+      setToast('Profile picture updated')
+    }
+    reader.readAsDataURL(file)
+  }
   const [skills, setSkills] = useState<string[]>(me?.skills ?? [])
   const [availability, setAvailability] = useState(me?.availability ?? '')
   const [saved, setSaved] = useState(false)
@@ -53,16 +67,39 @@ export default function Profile() {
       {/* identity card */}
       <div className="card p-6">
         <div className="flex flex-wrap items-center gap-4">
-          <Avatar user={me} size={64} />
+          <div className="relative">
+            <Avatar user={me} size={64} />
+            <button
+              onClick={() => photoInputRef.current?.click()}
+              title="Change profile picture"
+              aria-label="Change profile picture"
+              className="absolute -bottom-1 -right-1 grid h-7 w-7 place-items-center rounded-full bg-pine-800 text-paper shadow-card ring-2 ring-cream transition hover:bg-pine-900"
+            >
+              <Camera size={13} />
+            </button>
+            <input
+              ref={photoInputRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => { onPhotoPick(e.target.files?.[0]); e.target.value = '' }}
+            />
+          </div>
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl font-black tracking-tight text-ink">{me.name}</h1>
             <p className="text-sm text-pine-900/55">{me.title} {me.institution && `· ${me.institution}`}</p>
+            {me.email && <p className="text-xs text-pine-900/45">{me.email}{me.emailVerified && ' · ✓ verified'}</p>}
             <div className="mt-2 flex flex-wrap gap-1.5">
               <RoleBadge role={me.role} />
               {me.verified && <span className="chip bg-pine-100 text-pine-800">✔ Verified</span>}
               {me.expertise?.slice(0, 3).map((e) => <span key={e} className="chip bg-royal-50 text-royal-800">{e}</span>)}
             </div>
           </div>
+          {me.photo && (
+            <button
+              className="btn-ghost px-3 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-50"
+              onClick={() => { updateProfile({ photo: undefined }); setToast('Profile picture removed') }}
+            >
+              <Trash2 size={13} /> Remove photo
+            </button>
+          )}
         </div>
       </div>
 

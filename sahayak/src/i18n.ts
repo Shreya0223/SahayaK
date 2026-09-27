@@ -26,7 +26,7 @@ const D: Record<string, Row> = {
 
   /* shell */
   'viewAs': { en: 'View as:', hi: 'के रूप में देखें:' },
-  'hub': { en: 'Pune Rural Hub (Bhor / Mulshi)', hi: 'पुणे ग्रामीण हब (भोर / मुळशी)' },
+  'hub': { en: 'Ranchi Rural Hub (Angara / Bundu)', hi: 'रांची ग्रामीण हब (अंगारा / बुंदू)' },
   'r.farmers': { en: 'Farmers / Community', hi: 'किसान / समुदाय' },
   'r.health': { en: 'Rural Health & PHCs', hi: 'ग्रामीण आरोग्य व PHC' },
   'r.students': { en: 'Students (Active)', hi: 'छात्र (सक्रिय)' },

@@ -18,8 +18,8 @@ const CAN_DO = [
 ]
 
 const VISITS = [
-  { when: 'Every Tuesday', where: 'Bhor block — weekly chaupal, 10 am–1 pm' },
-  { when: 'Every Thursday', where: 'Mulshi block — PHC notice board help desk, 11 am–2 pm' },
+  { when: 'Every Tuesday', where: 'Angara block — weekly chaupal, 10 am–1 pm' },
+  { when: 'Every Thursday', where: 'Bundu block — PHC notice board help desk, 11 am–2 pm' },
   { when: '2nd Saturday', where: 'Panchayat office camps — on request via the helpline' },
 ]
 
@@ -108,7 +108,7 @@ export default function VoiceHelpline() {
             </label>
             <label className="block">
               <span className="label">Village / district</span>
-              <input value={village} onChange={(e) => setVillage(e.target.value)} placeholder="e.g. Bhor, Pune" className="input" />
+              <input value={village} onChange={(e) => setVillage(e.target.value)} placeholder="e.g. Angara, Ranchi" className="input" />
             </label>
             <label className="block">
               <span className="label">Phone number *</span>

@@ -152,7 +152,16 @@ export function LocationMap({ location, small = false }: { location: string; sma
   )
 }
 
-export function Avatar({ user, size = 40 }: { user: { avatar: string; name: string }; size?: number }) {
+export function Avatar({ user, size = 40 }: { user: { avatar: string; name: string; photo?: string }; size?: number }) {
+  if (user.photo) {
+    return (
+      <img
+        src={user.photo} alt={user.name} title={user.name}
+        className="shrink-0 rounded-full object-cover ring-1 ring-pine-900/10"
+        style={{ width: size, height: size }}
+      />
+    )
+  }
   return (
     <span
       className="grid shrink-0 place-items-center rounded-full bg-pine-100 ring-1 ring-pine-900/10"

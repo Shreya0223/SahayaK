@@ -129,7 +129,7 @@ export default function Onboarding() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="label">Institution</label>
-                <input className="input" value={form.institution} onChange={(e) => set('institution', e.target.value)} placeholder="e.g. COEP Technological University" />
+                <input className="input" value={form.institution} onChange={(e) => set('institution', e.target.value)} placeholder="e.g. BIT Mesra, Ranchi" />
               </div>
               <div>
                 <label className="label">Branch / discipline</label>
@@ -161,7 +161,7 @@ export default function Onboarding() {
           <>
             <div>
               <label className="label">Institution / Organization</label>
-              <input className="input" value={form.institution} onChange={(e) => set('institution', e.target.value)} placeholder="e.g. MPKV Rahuri" />
+              <input className="input" value={form.institution} onChange={(e) => set('institution', e.target.value)} placeholder="e.g. Birsa Agricultural University (BAU)" />
             </div>
             <div>
               <label className="label">Years of experience</label>
@@ -185,7 +185,7 @@ export default function Onboarding() {
             </div>
             <div>
               <label className="label">Location (district, state)</label>
-              <input className="input" value={form.location} onChange={(e) => set('location', e.target.value)} placeholder="e.g. Nashik, Maharashtra" />
+              <input className="input" value={form.location} onChange={(e) => set('location', e.target.value)} placeholder="e.g. Ranchi, Jharkhand" />
             </div>
             <p className="rounded-xl bg-pine-900/[0.04] p-3 text-xs leading-relaxed text-pine-900/55">
               🔒 Privacy: submit only non-personal information about problems. Never share patient names, IDs or other

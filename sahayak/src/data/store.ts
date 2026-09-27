@@ -754,10 +754,116 @@ export const useStore = create<State>()(
         const kept = state.problems.filter((p) => !PROBLEMS.find((sp) => sp.id === p.id && sp.hiddenFromDiscover && sp.reporterId === p.reporterId))
         const backfilled = kept.map((p) => (p.ai === 'done' && p.analysis) || !seedIds.has(p.id) ? p : { ...p, ...runAiAnalysis(p), ai: 'done' as const })
         if (backfilled.some((p, i) => p !== kept[i])) state.problems = backfilled
+        // relocate stale sessions from the old demo region to Jharkhand
+        relocateToJharkhand(state as unknown as PersistedShape)
+      },
+      version: 2,
+      /* v0 sessions stored the old demo region — migrate them on load. */
+      migrate: (persisted) => {
+        relocateToJharkhand(persisted as unknown as PersistedShape)
+        return persisted as never
       },
     },
   ),
 )
+
+/* ───────────────── Region migration (old demo region → Jharkhand) ───────────────── */
+
+const REGION_PAIRS: [RegExp, string][] = [
+  [/Bidar → Kalaburagi, Karnataka/g, 'Dumka → Ranchi, Jharkhand'],
+  [/Pune Rural Hub \(Bhor \/ Mulshi\)/g, 'Ranchi Rural Hub (Angara / Bundu)'],
+  [/Bhor, Pune Rural/g, 'Bundu, Ranchi Rural'],
+  [/Dindori Rd, Nashik/g, 'Bundu Rd, Ranchi'],
+  [/Nashik, Maharashtra/g, 'Ranchi, Jharkhand'],
+  [/Dharwad, Karnataka/g, 'Dhanbad, Jharkhand'],
+  [/Nagpur, Maharashtra/g, 'Jamshedpur, Jharkhand'],
+  [/Baramati, Maharashtra/g, 'Bokaro, Jharkhand'],
+  [/Bidar, Karnataka/g, 'Dumka, Jharkhand'],
+  [/Osmanabad, Maharashtra/g, 'Hazaribagh, Jharkhand'],
+  [/Nashik, MH/g, 'Ranchi, JH'],
+  [/Dharwad, KA/g, 'Dhanbad, JH'],
+  [/Nagpur, MH/g, 'Jamshedpur, JH'],
+  [/Baramati, MH/g, 'Bokaro, JH'],
+  [/Bidar, KA/g, 'Dumka, JH'],
+  [/Osmanabad, MH/g, 'Hazaribagh, JH'],
+  [/Pune, MH/g, 'Ranchi, JH'],
+  [/Rahuri, MH/g, 'Ranchi, JH'],
+  [/Govt\. of Maharashtra/g, 'Govt. of Jharkhand'],
+  [/MPKV Rahuri/g, 'Birsa Agricultural University (BAU)'],
+  [/COEP Technological University/g, 'BIT Mesra, Ranchi'],
+  [/Walchand College Sangli/g, 'BIT Mesra, Ranchi'],
+  [/GGU Institute of Technology/g, 'BIT Mesra, Ranchi'],
+  [/NIT Warangal/g, 'NIT Jamshedpur'],
+  [/SGGS Nanded/g, 'NIT Jamshedpur'],
+  [/Nanded, MH/g, 'Jamshedpur, JH'],
+  [/Manipal Institute of Technology/g, 'BIT Mesra, Ranchi'],
+  [/Manipal, KA/g, 'Ranchi, JH'],
+  [/IIT Bombay/g, 'IIT (ISM) Dhanbad'],
+  [/Mumbai, MH/g, 'Dhanbad, JH'],
+  [/Dr\. PDKV Akola/g, 'Birsa Agricultural University (BAU)'],
+  [/Akola, MH/g, 'Ranchi, JH'],
+  [/Bengaluru, KA/g, 'Jamshedpur, JH'],
+  [/VIT Pune/g, 'Ranchi University'],
+  [/MIT Institute of Design/g, 'BIT Mesra, Ranchi'],
+  [/IISER Pune/g, 'Central University of Jharkhand'],
+  [/Dr\. DY Patil Medical College/g, 'RIMS Ranchi'],
+  [/AIIMS Nagpur/g, 'AIIMS Deoghar'],
+  [/nashikgrapes/g, 'ranchigrapes'],
+  [/phc\.bidar/g, 'phc.dumka'],
+  [/chc\.osmanabad/g, 'chc.hazaribagh'],
+  [/baramatifpo/g, 'bokarofpo'],
+  [/Nashik/g, 'Ranchi'],
+  [/Dharwad/g, 'Dhanbad'],
+  [/Nagpur/g, 'Jamshedpur'],
+  [/Baramati/g, 'Bokaro'],
+  [/Bidar/g, 'Dumka'],
+  [/Osmanabad/g, 'Hazaribagh'],
+  [/Kalaburagi/g, 'Ranchi'],
+  [/Bhor/g, 'Angara'],
+  [/Mulshi/g, 'Bundu'],
+  [/Rahuri/g, 'Ranchi'],
+  [/Maharashtra/g, 'Jharkhand'],
+  [/Karnataka/g, 'Jharkhand'],
+  [/Pune/g, 'Ranchi'],
+]
+
+type PersistedShape = {
+  currentUser?: { location: string; institution?: string; bio?: string } | null
+  users: { location: string; institution?: string; bio?: string }[]
+  problems: { location: string; description: string; existingAttempts?: string; contact?: string }[]
+  projects: { objective?: string; name?: string }[]
+  communities: { name?: string; purpose?: string; posts?: { text?: string }[]; events?: { place?: string }[]; resources?: { title?: string }[] }[]
+  notifications: { text?: string }[]
+}
+
+const migrateText = (s: string) => REGION_PAIRS.reduce((acc, [re, to]) => acc.replace(re, to), s)
+
+/* Rewrites any persisted old-region strings across users, problems, projects,
+ * communities, notifications and reviews so existing demo sessions migrate. */
+function relocateToJharkhand(state: PersistedShape) {
+  const touch = <T extends object>(obj: T, keys: (keyof T)[]): T => {
+    let out = obj
+    let changed = false
+    for (const k of keys) {
+      const v = out[k]
+      if (typeof v === 'string') {
+        const nv = migrateText(v)
+        if (nv !== v) { changed = true; out = { ...out, [k]: nv } }
+      }
+    }
+    return changed ? out : obj
+  }
+  if (state.currentUser) state.currentUser = touch(state.currentUser, ['location', 'institution', 'bio'])
+  state.users = state.users.map((u) => touch(u, ['location', 'institution', 'bio']))
+  state.problems = state.problems.map((p) => touch(p, ['location', 'description', 'existingAttempts', 'contact']))
+  state.projects = state.projects.map((p) => touch(p, ['objective', 'name']))
+  state.communities = state.communities.map((c) =>
+    touch(c, ['name', 'purpose']) && touch(
+      { ...c, posts: c.posts?.map((p) => touch(p, ['text'])), events: c.events?.map((e) => touch(e, ['place'])), resources: c.resources?.map((r) => touch(r, ['title'])) } as typeof c,
+      ['name', 'purpose'],
+    ))
+  state.notifications = state.notifications.map((n) => touch(n, ['text']))
+}
 
 /* ───────────────── RBAC helpers ───────────────── */
 

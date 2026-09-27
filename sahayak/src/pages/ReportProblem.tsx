@@ -61,7 +61,7 @@ export default function ReportProblem() {
 
   const applyPreset = (p: typeof PRESETS[number]) => {
     setDomain(p.domain); setTitle(p.title); setDescription(p.description); setPeople(p.people)
-    setLocation('Bhor, Pune Rural')
+    setLocation('Bundu, Ranchi Rural')
   }
   const addImage = () => setImages((x) => [...x, `field_photo_${x.length + 1}.jpg`])
   const addDoc = () => setDocs((x) => [...x, `supporting_doc_${x.length + 1}.pdf`])
@@ -236,7 +236,7 @@ export default function ReportProblem() {
                 </div>
                 <div>
                   <label className="label" htmlFor="ploc">{t('report.location')}</label>
-                  <input id="ploc" className="input" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g., Bhor, Pune Rural" />
+                  <input id="ploc" className="input" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g., Bundu, Ranchi Rural" />
                 </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">

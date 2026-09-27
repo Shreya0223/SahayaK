@@ -22,3 +22,4 @@ powershell -NoProfile -Command "(Start-Process -FilePath 'npm.cmd' -ArgumentList
 - Vite serves `localhost` only — correct for the preview.
 - Verify: `curl http://localhost:5173/` → HTTP 200, then register preview with URL + pid.
 - Kill previous instance first if one is listening: `netstat -ano | findstr :5173` then `taskkill /PID <pid> /F`.
+- NOTE: the Start-Process command may time out the terminal tool (~25–60s) even though the server starts fine. Don't retry blindly — check `curl http://localhost:5173/` for 200 and get the pid via `netstat -ano | grep ':5173'` (avoid `Get-CimInstance` filters with `$_` from bash — bash eats the `$`).
