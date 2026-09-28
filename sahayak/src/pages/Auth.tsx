@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Check, Lock, MailCheck, ShieldCheck } from 'lucide-react'
 import { useStore, ROLE_LABEL, ROLE_HOME } from '@/data/store'
-import { supabase } from '@/lib/supabase'
+import { supabase, emailRedirectTo } from '@/lib/supabase'
 import { cx } from '@/ui/common'
 import { LogoMark } from '@/ui/Logo'
 import type { Role } from '@/data/types'
@@ -121,7 +121,10 @@ export default function Auth() {
     /* Real verification — Supabase Auth emails a 6-digit OTP to the user's inbox. */
     setVerify({ kind: 'awaiting', email: em, name: name.trim(), role, code: '', expiresAt: Date.now() + CODE_TTL_MS, via, real: true })
     setSending(true)
-    const { error } = await supabase.auth.signInWithOtp({ email: em, options: { shouldCreateUser: true } })
+    const { error } = await supabase.auth.signInWithOtp({
+      email: em,
+      options: { shouldCreateUser: true, emailRedirectTo: emailRedirectTo() },
+    })
     setSending(false)
     if (error) {
       setVerify({ kind: 'none' })
@@ -159,7 +162,10 @@ export default function Auth() {
     setCodeError('')
     if (verify.real) {
       setSending(true)
-      const { error } = await supabase.auth.signInWithOtp({ email: verify.email, options: { shouldCreateUser: true } })
+      const { error } = await supabase.auth.signInWithOtp({
+        email: verify.email,
+        options: { shouldCreateUser: true, emailRedirectTo: emailRedirectTo() },
+      })
       setSending(false)
       if (error) { setCodeError(`Could not resend: ${error.message}`); return }
     }

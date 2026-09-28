@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment (keep real keys out of git; .env.example is committed)
+.env
+.env.local
+.env.*.local

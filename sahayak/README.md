@@ -21,6 +21,18 @@ npm run build    # production build (dist/)
 
 Requires Node 18+. No backend needed — state is an in-browser mock API (Zustand, persisted to localStorage). Reset the demo by clearing site data.
 
+## Deploy to Vercel
+
+The repo is Vercel-ready: `vercel.json` rewrites all routes to `index.html` so SPA deep links (e.g. `/discover`, `/auth`) survive a hard refresh.
+
+1. Push this folder to GitHub and **Import Project** in Vercel (framework preset: **Vite**; build `npm run build`, output `dist` — auto-detected).
+2. *(Optional)* set environment variables in **Settings → Environment Variables** (see `.env.example`):
+   - `VITE_SUPABASE_URL` — your Supabase project URL
+   - `VITE_SUPABASE_ANON_KEY` — publishable (anon) key
+
+   Without them the build uses the built-in demo credentials from `src/lib/supabase.ts`.
+3. In **Supabase → Authentication → URL Configuration**, add `https://<your-app>.vercel.app` (and your custom domain) to **Redirect URLs**, and set **Site URL** to the production origin — email-confirmation links then land back on the app from any deployment.
+
 ## 3-minute demo script
 
 1. **Sign in → 🧑‍🌾 Farmer** (one-click). Report a new problem — fill the form, submit.
